@@ -3,7 +3,6 @@ package edu.utah.cs4962.books;
 import android.app.Activity;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -14,14 +13,24 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 
 public class BookListActivity extends Activity implements ListAdapter
 {
-    int _viewCount = 0;
     ArrayList<String> _bookList = new ArrayList<String>();
-    ArrayList<Integer> _bookImageList = new ArrayList<Integer>();
+   // ArrayList<Integer> _bookImageList = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,15 +46,15 @@ public class BookListActivity extends Activity implements ListAdapter
 //        _bookList.add("Harry Potter and Sorcerer's Stone");
 
 
-        _bookList.add("Mistborn");
-        _bookList.add("Words of Radience");
-        _bookList.add("Green Eggs and Ham");
-        _bookList.add("Ender's Game");
+//        _bookList.add("Mistborn");
+//        _bookList.add("Words of Radience");
+//        _bookList.add("Green Eggs and Ham");
+//        _bookList.add("Ender's Game");
 
-        _bookImageList.add(R.drawable.book0);
-        _bookImageList.add(R.drawable.book1);
-        _bookImageList.add(R.drawable.book2);
-        _bookImageList.add(R.drawable.book3);
+//        _bookImageList.add(R.drawable.book0);
+//        _bookImageList.add(R.drawable.book1);
+//        _bookImageList.add(R.drawable.book2);
+//        _bookImageList.add(R.drawable.book3);
 
 
         ListView bookListView = new ListView(this);
@@ -61,6 +70,75 @@ public class BookListActivity extends Activity implements ListAdapter
         setContentView(bookListView);
     }
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+
+
+        try
+        {
+            File file = new File(getFilesDir(), "Library.txt");
+            FileReader textReader = new FileReader(file);
+            BufferedReader bufferedTextReader = new BufferedReader(textReader);
+            String jsonBookList = null;
+            jsonBookList = bufferedTextReader.readLine();
+
+            Gson gson = new Gson();
+            Type bookListType = new TypeToken<ArrayList<String>>(){}.getType();
+            _bookList = gson.fromJson(jsonBookList, bookListType);
+
+            bufferedTextReader.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+
+//        try
+//        {
+//            File file = new File(getFilesDir(), "Library.txt");
+//            FileWriter textWriter = new FileWriter(file, false);
+//            BufferedWriter bufferedWriter = new BufferedWriter(textWriter);
+//            for (String bookTitle: _bookList)
+//            {
+//                bufferedWriter.write(bookTitle + "\n");
+//            }
+//
+//            bufferedWriter.close();
+//        }
+//        catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
+
+        Gson gson = new Gson();
+        String jsonBookList = gson.toJson(_bookList);
+
+        try
+        {
+            File file = new File(getFilesDir(), "Library.txt");
+            FileWriter textWriter = new FileWriter(file, false);
+            BufferedWriter bufferedWriter = new BufferedWriter(textWriter);
+            bufferedWriter.write(jsonBookList);
+            bufferedWriter.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public boolean isEmpty()
@@ -110,14 +188,14 @@ public class BookListActivity extends Activity implements ListAdapter
         //long itemId = getItemId(position); returns Id from some data model, we don't have that
         //String itemText = (String)getItem(position);
         String itemText = _bookList.get(position);
-        int itemResource = _bookImageList.get(position);
+        //int itemResource = _bookImageList.get(position);
 
         LinearLayout bookLayout = new LinearLayout(this);
         bookLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        ImageView bookImageView = new ImageView(this);
-        bookImageView.setImageResource(itemResource);
-        bookLayout.addView(bookImageView);
+        //ImageView bookImageView = new ImageView(this);
+        //bookImageView.setImageResource(itemResource);
+       // bookLayout.addView(bookImageView);
 
         TextView bookView = null;
 //        if(convertView != null && convertView.getClass() == TextView.class)
@@ -125,14 +203,14 @@ public class BookListActivity extends Activity implements ListAdapter
 //        else
 //        {
             bookView = new TextView(this);
-            _viewCount++;
-//            Log.i("viewCount", "viewCount = " + _viewCount);
 //        }
         bookView.setText(itemText);
         bookLayout.addView(bookView);
 
         return bookLayout;
     }
+
+
 
     @Override
     public boolean areAllItemsEnabled()
