@@ -1,6 +1,7 @@
 package edu.utah.cs4962.books;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.View;
@@ -64,7 +65,14 @@ public class BookListActivity extends Activity implements ListAdapter
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                Toast.makeText(BookListActivity.this, parent.getAdapter().getItem(position).toString(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(BookListActivity.this, parent.getAdapter().getItem(position).toString(), Toast.LENGTH_LONG).show();
+                int bookIndex = position;
+                String bookTitle = _bookList.get(bookIndex);
+
+                Intent bookDetailIntent = new Intent();
+                bookDetailIntent.setClass(BookListActivity.this, BookDetailActivity.class);
+                bookDetailIntent.putExtra(BookDetailActivity)
+                startActivity(bookDetailIntent);
             }
         });
         setContentView(bookListView);
@@ -104,24 +112,6 @@ public class BookListActivity extends Activity implements ListAdapter
     protected void onPause()
     {
         super.onPause();
-
-
-//        try
-//        {
-//            File file = new File(getFilesDir(), "Library.txt");
-//            FileWriter textWriter = new FileWriter(file, false);
-//            BufferedWriter bufferedWriter = new BufferedWriter(textWriter);
-//            for (String bookTitle: _bookList)
-//            {
-//                bufferedWriter.write(bookTitle + "\n");
-//            }
-//
-//            bufferedWriter.close();
-//        }
-//        catch (IOException e)
-//        {
-//            e.printStackTrace();
-//        }
 
         Gson gson = new Gson();
         String jsonBookList = gson.toJson(_bookList);
