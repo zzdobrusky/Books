@@ -30,8 +30,8 @@ import java.util.ArrayList;
 
 public class BookListActivity extends Activity implements ListAdapter
 {
-    ArrayList<String> _bookList = new ArrayList<String>();
-   // ArrayList<Integer> _bookImageList = new ArrayList<Integer>();
+    Library _library = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,13 +67,14 @@ public class BookListActivity extends Activity implements ListAdapter
             {
                 //Toast.makeText(BookListActivity.this, parent.getAdapter().getItem(position).toString(), Toast.LENGTH_LONG).show();
                 int bookIndex = position;
-                String bookTitle = _bookList.get(bookIndex);
+                String bookTitle = _library.getBook(bookIndex).title;
 
                 Intent bookDetailIntent = new Intent();
                 bookDetailIntent.setClass(BookListActivity.this, BookDetailActivity.class);
                 bookDetailIntent.putExtra(BookDetailActivity.BOOK_TITLE_EXTRA, bookTitle);
-                //startActivity(bookDetailIntent);
-                startActivityForResult(bookDetailIntent, BookDetailActivity.CHOOSE_COLOR_REQUEST_CODE);
+
+                //startActivityForResult(bookDetailIntent, BookDetailActivity.CHOOSE_COLOR_REQUEST_CODE);
+                startActivity(bookDetailIntent);
             }
         });
         setContentView(bookListView);
@@ -90,29 +91,7 @@ public class BookListActivity extends Activity implements ListAdapter
     {
         super.onResume();
 
-
-
-        try
-        {
-            File file = new File(getFilesDir(), "Library.txt");
-            FileReader textReader = new FileReader(file);
-            BufferedReader bufferedTextReader = new BufferedReader(textReader);
-            String jsonBookList = null;
-            jsonBookList = bufferedTextReader.readLine();
-
-            Gson gson = new Gson();
-            Type bookListType = new TypeToken<ArrayList<String>>(){}.getType();
-            _bookList = gson.fromJson(jsonBookList, bookListType);
-
-            bufferedTextReader.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-
-
+        _library.loadLibrary();
     }
 
     @Override
@@ -120,21 +99,7 @@ public class BookListActivity extends Activity implements ListAdapter
     {
         super.onPause();
 
-        Gson gson = new Gson();
-        String jsonBookList = gson.toJson(_bookList);
-
-        try
-        {
-            File file = new File(getFilesDir(), "Library.txt");
-            FileWriter textWriter = new FileWriter(file, false);
-            BufferedWriter bufferedWriter = new BufferedWriter(textWriter);
-            bufferedWriter.write(jsonBookList);
-            bufferedWriter.close();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        _library.saveLibrary();
     }
 
     @Override
@@ -146,7 +111,7 @@ public class BookListActivity extends Activity implements ListAdapter
     @Override
     public int getCount()
     {
-        return _bookList.size();
+        return _library.getBookCount();
     }
 
     @Override
@@ -164,7 +129,7 @@ public class BookListActivity extends Activity implements ListAdapter
     @Override
     public Object getItem(int position)
     {
-        return _bookList.get((int)getItemId(position));
+        return _library.getBook(position);
     }
 
     @Override
@@ -184,7 +149,8 @@ public class BookListActivity extends Activity implements ListAdapter
     {
         //long itemId = getItemId(position); returns Id from some data model, we don't have that
         //String itemText = (String)getItem(position);
-        String itemText = _bookList.get(position);
+        int bookIndex = position;
+        String itemText = _library.getBook(bookIndex).title;
         //int itemResource = _bookImageList.get(position);
 
         LinearLayout bookLayout = new LinearLayout(this);

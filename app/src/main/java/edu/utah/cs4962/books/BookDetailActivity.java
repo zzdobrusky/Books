@@ -31,7 +31,7 @@ public class BookDetailActivity extends Activity
            bookTitleTextView.setText(bookTitle);
        }
 
-       setResult(Integer.parseInt(CHOOSE_COLOR_REQUEST_COLOR_EXTRA));
+       //setResult(Integer.parseInt(CHOOSE_COLOR_REQUEST_COLOR_EXTRA));
     }
 
 }
