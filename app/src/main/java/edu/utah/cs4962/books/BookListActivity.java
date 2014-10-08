@@ -71,11 +71,18 @@ public class BookListActivity extends Activity implements ListAdapter
 
                 Intent bookDetailIntent = new Intent();
                 bookDetailIntent.setClass(BookListActivity.this, BookDetailActivity.class);
-                bookDetailIntent.putExtra(BookDetailActivity)
-                startActivity(bookDetailIntent);
+                bookDetailIntent.putExtra(BookDetailActivity.BOOK_TITLE_EXTRA, bookTitle);
+                //startActivity(bookDetailIntent);
+                startActivityForResult(bookDetailIntent, BookDetailActivity.CHOOSE_COLOR_REQUEST_CODE);
             }
         });
         setContentView(bookListView);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
