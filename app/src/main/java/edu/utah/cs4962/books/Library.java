@@ -18,24 +18,15 @@ import java.util.Date;
  */
 public class Library
 {
-    public class Book
-    {
-        public String title;
-        public Date publicationDate;
-
-        public Book()
-        {
-
-        }
-
-        public Book(Book book)
-        {
-            title = book.title;
-            publicationDate = book.publicationDate;
-        }
-    }
-
     ArrayList<Book> _books = new ArrayList<Book>();
+    File _libraryFile;
+    Type _bookArrayType;
+
+    public Library(File libraryFile)
+    {
+        _libraryFile = libraryFile;
+        _bookArrayType = new TypeToken<ArrayList<Book>>(){}.getType();
+    }
 
     public int getBookCount()
     {
@@ -55,7 +46,7 @@ public class Library
 
         _books.add(book);
 
-        //saveLibrary();
+        saveLibrary();
 
         // TODO: Notify listener of book addition
     }
@@ -64,25 +55,23 @@ public class Library
     {
         _books.remove(bookIndex);
 
-        //saveLibrary();
+        saveLibrary();
 
         // TODO: Notify listener of book removal
     }
 
-    public void loadLibrary(File libraryFile)
+    public void loadLibrary()
     {
         _books.clear();
         try
         {
-            FileReader textReader = new FileReader(libraryFile);
+            FileReader textReader = new FileReader(_libraryFile);
             BufferedReader bufferedTextReader = new BufferedReader(textReader);
             String jsonBookList = null;
             jsonBookList = bufferedTextReader.readLine();
 
             Gson gson = new Gson();
-            Book[] bookList  = gson.fromJson(jsonBookList, Book[].class);
-            for (Book book : bookList)
-                _books.add(book);
+            _books  = gson.fromJson(jsonBookList, _bookArrayType);
 
             bufferedTextReader.close();
         }
@@ -92,14 +81,14 @@ public class Library
         }
     }
 
-    public void saveLibrary(File libraryFile)
+    public void saveLibrary()
     {
         Gson gson = new Gson();
-        String jsonBookList = gson.toJson(_books.toArray(new Book[_books.size()]));
+        String jsonBookList = gson.toJson(_books, _bookArrayType);
 
         try
         {
-            FileWriter textWriter = new FileWriter(libraryFile, false);
+            FileWriter textWriter = new FileWriter(_libraryFile, false);
             BufferedWriter bufferedWriter = new BufferedWriter(textWriter);
             bufferedWriter.write(jsonBookList);
             bufferedWriter.close();

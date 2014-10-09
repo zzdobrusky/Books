@@ -7,30 +7,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
+
 
 
 public class BookListActivity extends Activity implements ListAdapter
 {
-    Library _library = null;
+    Library _library;
 
 
     @Override
@@ -38,13 +26,15 @@ public class BookListActivity extends Activity implements ListAdapter
     {
         super.onCreate(savedInstanceState);
 
-//        _bookList.add("Song of Ice and Fire");
-//        _bookList.add("Words of Radience");
-//        _bookList.add("Mistborn");
-//        _bookList.add("Ende's Game");
-//        _bookList.add("Green Eggs and Ham");
-//        _bookList.add("Catcher in the Rye");
-//        _bookList.add("Harry Potter and Sorcerer's Stone");
+        _library = new Library(new File(getFilesDir(), "library.txt"));
+
+//        _library.addBook(new Book("Song of Ice and Fire"));
+//        _library.addBook(new Book("Words of Radience"));
+//        _library.addBook(new Book("Mistborn"));
+//        _library.addBook(new Book("Ende's Game"));
+//        _library.addBook(new Book("Green Eggs and Ham"));
+//        _library.addBook(new Book("Catcher in the Rye"));
+//        _library.addBook(new Book("Harry Potter and Sorcerer's Stone"));
 
 
 //        _bookList.add("Mistborn");
