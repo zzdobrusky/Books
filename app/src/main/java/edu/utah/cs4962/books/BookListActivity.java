@@ -18,15 +18,14 @@ import java.io.File;
 
 public class BookListActivity extends Activity implements ListAdapter
 {
-    Library _library;
-
+    private File _libraryFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
-        _library = new Library(new File(getFilesDir(), "library.txt"));
+        _libraryFile = new File(getFilesDir(), "library.txt");
 
 //        _library.addBook(new Book("Song of Ice and Fire"));
 //        _library.addBook(new Book("Words of Radience"));
@@ -57,11 +56,10 @@ public class BookListActivity extends Activity implements ListAdapter
             {
                 //Toast.makeText(BookListActivity.this, parent.getAdapter().getItem(position).toString(), Toast.LENGTH_LONG).show();
                 int bookIndex = position;
-                String bookTitle = _library.getBook(bookIndex).title;
 
                 Intent bookDetailIntent = new Intent();
                 bookDetailIntent.setClass(BookListActivity.this, BookDetailActivity.class);
-                bookDetailIntent.putExtra(BookDetailActivity.BOOK_TITLE_EXTRA, bookTitle);
+                bookDetailIntent.putExtra(BookDetailActivity.BOOK_INDEX_EXTRA, bookIndex);
 
                 //startActivityForResult(bookDetailIntent, BookDetailActivity.CHOOSE_COLOR_REQUEST_CODE);
                 startActivity(bookDetailIntent);
@@ -70,27 +68,27 @@ public class BookListActivity extends Activity implements ListAdapter
         setContentView(bookListView);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+//    {
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
+//
+//    @Override
+//    protected void onResume()
+//    {
+//        super.onResume();
+//
+//        Library.getInstance(_libraryFile).loadLibrary();
+//    }
 
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-
-        _library.loadLibrary();
-    }
-
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-
-        _library.saveLibrary();
-    }
+//    @Override
+//    protected void onPause()
+//    {
+//        super.onPause();
+//
+//        Library.getInstance(_libraryFile).saveLibrary();
+//    }
 
     @Override
     public boolean isEmpty()
@@ -101,7 +99,7 @@ public class BookListActivity extends Activity implements ListAdapter
     @Override
     public int getCount()
     {
-        return _library.getBookCount();
+        return Library.getInstance(_libraryFile).getBookCount();
     }
 
     @Override
@@ -119,7 +117,7 @@ public class BookListActivity extends Activity implements ListAdapter
     @Override
     public Object getItem(int position)
     {
-        return _library.getBook(position);
+        return Library.getInstance(_libraryFile).getBook(position);
     }
 
     @Override
@@ -140,7 +138,7 @@ public class BookListActivity extends Activity implements ListAdapter
         //long itemId = getItemId(position); returns Id from some data model, we don't have that
         //String itemText = (String)getItem(position);
         int bookIndex = position;
-        String itemText = _library.getBook(bookIndex).title;
+        String itemText = Library.getInstance(_libraryFile).getBook(bookIndex).title;
         //int itemResource = _bookImageList.get(position);
 
         LinearLayout bookLayout = new LinearLayout(this);

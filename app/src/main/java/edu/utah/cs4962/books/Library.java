@@ -18,14 +18,23 @@ import java.util.Date;
  */
 public class Library
 {
+    static Library _instance = null;
+    static Library getInstance(File libraryFile)
+    {
+        if(_instance == null)
+            _instance = new Library(libraryFile);
+
+        return _instance;
+    }
+
     ArrayList<Book> _books = new ArrayList<Book>();
     File _libraryFile;
-    Type _bookArrayType;
+    Type _bookArrayType = new TypeToken<ArrayList<Book>>(){}.getType();
 
-    public Library(File libraryFile)
+    private Library(File libraryFile)
     {
         _libraryFile = libraryFile;
-        _bookArrayType = new TypeToken<ArrayList<Book>>(){}.getType();
+        loadLibrary();
     }
 
     public int getBookCount()
@@ -40,12 +49,10 @@ public class Library
 
     public void addBook(Book book)
     {
-        // TODO: Validate befor eadding to list
         if(book.title == null || book.title.length() == 0)
             return;
 
-        _books.add(book);
-
+        _books.add(new Book(book));
         saveLibrary();
 
         // TODO: Notify listener of book addition
@@ -54,13 +61,12 @@ public class Library
     public void removeBook(int bookIndex)
     {
         _books.remove(bookIndex);
-
         saveLibrary();
 
         // TODO: Notify listener of book removal
     }
 
-    public void loadLibrary()
+    private void loadLibrary()
     {
         _books.clear();
         try
@@ -81,7 +87,7 @@ public class Library
         }
     }
 
-    public void saveLibrary()
+    private void saveLibrary()
     {
         Gson gson = new Gson();
         String jsonBookList = gson.toJson(_books, _bookArrayType);
