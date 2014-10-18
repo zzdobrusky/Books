@@ -55,7 +55,10 @@ public class BookDetailActivity extends Activity
             public void onClick(View view)
             {
                 if(_bookIndex >= 0 && _bookIndex < Library.getInstance(_libraryFile).getBookCount())
+                {
                     Library.getInstance(_libraryFile).removeBook(_bookIndex);
+                    finish();
+                }
             }
         });
 

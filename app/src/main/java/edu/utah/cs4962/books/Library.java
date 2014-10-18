@@ -27,6 +27,20 @@ public class Library
         return _instance;
     }
 
+    public interface OnBookChangeListener
+    {
+        public void onBookChange(Library library);
+    }
+    OnBookChangeListener _onBookChangeListener = null;
+    public OnBookChangeListener getOnBookChangeListener()
+    {
+        return _onBookChangeListener;
+    }
+    public void setOnBookChangeListener(OnBookChangeListener onBookChangeListener)
+    {
+        _onBookChangeListener = onBookChangeListener;
+    }
+
     ArrayList<Book> _books = new ArrayList<Book>();
     File _libraryFile;
     Type _bookArrayType = new TypeToken<ArrayList<Book>>(){}.getType();
@@ -55,7 +69,9 @@ public class Library
         _books.add(new Book(book));
         saveLibrary();
 
-        // TODO: Notify listener of book addition
+        // Notify listener of book addition
+        if(_onBookChangeListener != null)
+            _onBookChangeListener.onBookChange(this);
     }
 
     public void removeBook(int bookIndex)
@@ -63,7 +79,9 @@ public class Library
         _books.remove(bookIndex);
         saveLibrary();
 
-        // TODO: Notify listener of book removal
+        // Notify listener of book removal
+        if(_onBookChangeListener != null)
+            _onBookChangeListener.onBookChange(this);
     }
 
     private void loadLibrary()

@@ -7,18 +7,22 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
-
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class BookListActivity extends Activity implements ListAdapter
 {
     private File _libraryFile;
+    ListView _bookListView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -26,6 +30,7 @@ public class BookListActivity extends Activity implements ListAdapter
         super.onCreate(savedInstanceState);
 
         _libraryFile = new File(getFilesDir(), "library.txt");
+
 
 //        _library.addBook(new Book("Song of Ice and Fire"));
 //        _library.addBook(new Book("Words of Radience"));
@@ -36,20 +41,28 @@ public class BookListActivity extends Activity implements ListAdapter
 //        _library.addBook(new Book("Harry Potter and Sorcerer's Stone"));
 
 
-//        _bookList.add("Mistborn");
-//        _bookList.add("Words of Radience");
-//        _bookList.add("Green Eggs and Ham");
-//        _bookList.add("Ender's Game");
+        LinearLayout rootLayout = new LinearLayout(this);
+        rootLayout.setOrientation(LinearLayout.VERTICAL);
 
-//        _bookImageList.add(R.drawable.book0);
-//        _bookImageList.add(R.drawable.book1);
-//        _bookImageList.add(R.drawable.book2);
-//        _bookImageList.add(R.drawable.book3);
+        _bookListView = new ListView(this);
+        _bookListView.setAdapter(this);
+        LinearLayout.LayoutParams bookListViewLP = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1);
+        rootLayout.addView(_bookListView, bookListViewLP);
 
+        Button addBookButton = new Button(this);
+        addBookButton.setText(R.string.add_book_button_label);
+        LinearLayout.LayoutParams addBookButtonLP = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        rootLayout.addView(addBookButton, addBookButtonLP);
 
-        ListView bookListView = new ListView(this);
-        bookListView.setAdapter( this);
-        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        setContentView(rootLayout);
+
+        _bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
@@ -61,34 +74,53 @@ public class BookListActivity extends Activity implements ListAdapter
                 bookDetailIntent.setClass(BookListActivity.this, BookDetailActivity.class);
                 bookDetailIntent.putExtra(BookDetailActivity.BOOK_INDEX_EXTRA, bookIndex);
 
-                //startActivityForResult(bookDetailIntent, BookDetailActivity.CHOOSE_COLOR_REQUEST_CODE);
+
                 startActivity(bookDetailIntent);
             }
         });
-        setContentView(bookListView);
+
+        addBookButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent addBookIntent = new Intent();
+                addBookIntent.setClass(BookListActivity.this, AddBookActivity.class);
+
+                startActivity(addBookIntent);
+            }
+        });
+
+        Library.getInstance(_libraryFile).setOnBookChangeListener(new Library.OnBookChangeListener()
+        {
+            @Override
+            public void onBookChange(Library library)
+            {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        _bookListView.invalidateViews();
+                    }
+                });
+
+            }
+        });
+
+//        Timer addBookTimer = new Timer();
+//        addBookTimer.schedule(new TimerTask()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                Book book = new Book();
+//                book.title = "A book published at " + (new Date()).toString();
+//                book.publicationDate = new Date();
+//                Library.getInstance(_libraryFile).addBook(book);
+//            }
+//        }, 5000, 5000);
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-//    {
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
-//
-//    @Override
-//    protected void onResume()
-//    {
-//        super.onResume();
-//
-//        Library.getInstance(_libraryFile).loadLibrary();
-//    }
-
-//    @Override
-//    protected void onPause()
-//    {
-//        super.onPause();
-//
-//        Library.getInstance(_libraryFile).saveLibrary();
-//    }
 
     @Override
     public boolean isEmpty()
